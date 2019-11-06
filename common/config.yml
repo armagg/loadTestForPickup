@@ -1,6 +1,6 @@
 dev_addresses:
   admin: https://demo-sso.digikala.com/dev/cli/
-  fulfilment: https://demo-fc.digikala.com/dev/cli/
+  fulfillment: https://demo-fc.digikala.com/dev/cli/
 admin_command:
   create_user: supernova:digikala:account:admin:create
   number_of_users: supernova:digikala:account:number:picker:test

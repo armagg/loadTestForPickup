@@ -1,0 +1,60 @@
+import os
+import requests as r
+import yaml
+from enum import Enum
+
+dev_username = None
+dev_password = None
+
+
+class Panels(Enum):
+    ADMIN = 'admin'
+    FULFILMENT = 'fulfillment'
+
+
+def argument_adder(*args):
+    string = ''
+    for arg in args:
+        string += str(arg) + '%20'
+    return string
+
+
+def call_dev(panel: Panels, number, prefix):
+    with open('common/config.yml', 'r') as config:
+        config = yaml.safe_load(config)
+        address = config['dev_address'][panel.value]
+    if panel == Panels.ADMIN:
+        response = r.get(address + config[
+            panel.value + '_command'] + '/' + config['admin_command']['number_of_users'] + argument_adder(prefix,
+                                                                                                          number),
+                         auth=(dev_username, dev_password))
+        if response.status_code == 200:
+            print(response.json()['message'])
+            print('starting to assign to locations')
+            pass
+        else:
+            address = address + config['admin_command']['create_user']
+            if response.status_code == 404:
+                print(response.json()['message'])
+                create_specific_user(address, 0, number, prefix)
+            else:
+                print(response.json()['message'])
+                begin = response.json()['valid_number']
+                create_specific_user(address, begin - 1, number, prefix)
+
+
+def create_specific_user(address, begin, end, prefix):
+    for i in range(begin, end):
+        r.get(address + argument_adder(prefix + str(i), prefix + str(i), '98950' + str('%4d' % i)),
+              auth=(dev_username, dev_password))
+
+
+def set_credentials():
+    dev_username = os.environ['dev_username']
+    dev_password = os.environ['dev_password']
+
+
+def create_enough_admins():
+    number_of_testers = input('how many testers do you want? ')
+    prefix = input('whats the prefix of them emails ? ')
+    call_dev(Panels.ADMIN, number_of_testers, prefix)
