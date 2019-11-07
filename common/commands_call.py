@@ -50,8 +50,13 @@ def create_specific_user(address, begin, end, prefix):
 
 
 def set_credentials():
-    dev_username = os.environ['dev_username']
-    dev_password = os.environ['dev_password']
+    try:
+        dev_username = os.environ['dev_username']
+        dev_password = os.environ['dev_password']
+        return True
+    except KeyError:
+        print('please set environments variables at first')
+        return False
 
 
 def create_enough_admins():
