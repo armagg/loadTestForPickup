@@ -1,10 +1,11 @@
+from dotenv.main import load_dotenv
 import os
 import requests as r
 import yaml
 from enum import Enum
 
-dev_username = None
-dev_password = None
+dev_username: str = None
+dev_password: str = None
 
 
 class Panels(Enum):
@@ -50,13 +51,22 @@ def create_specific_user(address, begin, end, prefix):
 
 
 def set_credentials():
+    project_folder = os.path.expanduser('~/PycharmProjects/loadTestForPickup')
+    load_dotenv(os.path.join(project_folder, '.env'))
+    global dev_username
+    global dev_password
     try:
         dev_username = os.environ['dev_username']
         dev_password = os.environ['dev_password']
+        print(dev_password, dev_username)
         return True
     except KeyError:
         print('please set environments variables at first')
         return False
+
+
+def get_credentials():
+    print(dev_username, dev_password)
 
 
 def create_enough_admins():
