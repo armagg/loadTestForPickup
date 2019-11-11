@@ -7,3 +7,5 @@ admin_command:
 arguments:
   create_user: email, pass, phone
   number_of_users: prefix, number
+files:
+  users:

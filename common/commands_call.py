@@ -1,7 +1,6 @@
 from dotenv.main import load_dotenv
 import os
 import requests as r
-import yaml
 from enum import Enum
 
 dev_username: str = None
@@ -21,9 +20,9 @@ def argument_adder(*args):
 
 
 def call_dev(panel: Panels, number, prefix):
-    with open('common/config.yml', 'r') as config:
-        config = yaml.safe_load(config)
-        address = config['dev_address'][panel.value]
+    import common.data_save as data
+    config = data.config_loader()
+    address = config['dev_address'][panel.value]
     if panel == Panels.ADMIN:
         response = r.get(address + config[
             panel.value + '_command'] + '/' + config['admin_command']['number_of_users'] + argument_adder(prefix,
@@ -46,7 +45,7 @@ def call_dev(panel: Panels, number, prefix):
 
 def create_specific_user(address, begin, end, prefix):
     for i in range(begin, end):
-        r.get(address + argument_adder(prefix + str(i), prefix + str(i), '98950' + str('%4d' % i)),
+        r.get(address + argument_adder(prefix + str(i) + '@pickup.test', prefix + str(i), '98930' + str('%7d' % i)),
               auth=(dev_username, dev_password))
 
 
