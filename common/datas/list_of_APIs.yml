@@ -1,0 +1,6 @@
+fulfillment:
+  login: /phoenix/user/login
+  get_first_step: /phoenix/serial/pickup/getPickupList
+  get_serial: /pickuptest/get-serial
+  register_item: /phoenix/serial/pickup/registerPickupItem
+  confirm: /phoenix/serial/pickup/actions/confirm/invoke

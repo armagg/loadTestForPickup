@@ -4,3 +4,7 @@ class FileIsEmpty(Exception):
 
 class TokenExpires(Exception):
     pass
+
+
+class NotEnoughUsers(Exception):
+    pass

@@ -8,4 +8,6 @@ arguments:
   create_user: email, pass, phone
   number_of_users: prefix, number
 files:
-  users:
+  users: files/users.json
+api_file: common/datas/list_of_APIs.yml
+
