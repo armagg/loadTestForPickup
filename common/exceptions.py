@@ -5,6 +5,8 @@ class FileIsEmpty(Exception):
 class TokenExpires(Exception):
     pass
 
+class NotFoundFile(FileNotFoundError):
+    pass
 
 class NotEnoughUsers(Exception):
     pass
