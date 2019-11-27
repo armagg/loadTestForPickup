@@ -50,7 +50,8 @@ def create_specific_user(address, begin, end, prefix):
 
 
 def set_credentials():
-    project_folder = os.path.expanduser('~/PycharmProjects/loadTestForPickup')
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    project_folder = os.path.expanduser(root_dir)
     load_dotenv(os.path.join(project_folder, '.env'))
     global dev_username
     global dev_password
