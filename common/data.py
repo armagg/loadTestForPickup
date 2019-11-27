@@ -1,15 +1,17 @@
-from dataclasses import dataclass
-from common.exceptions import *
-import json, yaml
+import json
 import os
+from dataclasses import dataclass
+
+import yaml
+from pickle import load, dump
+
+from common.exceptions import *
 
 
-@dataclass
 class User:
-    username: str
-    password: str
-    token: str = None
-    new_token: str = None
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
 
 def load_yaml(address):
@@ -27,33 +29,33 @@ def config_loader():
 class Data:
 
     def __init__(self):
-        config = config_loader()
-        address = config['files']['users']
-        self.mode = 'r' if os.path.exists(address) else 'w'
-        self.users_file = open(address, self.mode)
-        if self.mode == 'w':
-            raise FileIsEmpty()
         try:
-            self.users: dict = json.load(self.users_file)
-            users = []
-            for user in self.users:
-                users.append(User(user['username'], user['password']))
-            self.users = users
-        except json.JSONDecodeError:
-            raise FileIsEmpty()
+            config = config_loader()
+            self.address = config['files']['users']
+            self.mode = 'rb' if os.path.exists(self.address) else 'wb'
+            self.users_file = open(self.address, self.mode)
+            if self.mode == 'wb':
+                raise FileIsEmpty
+            try:
+                self.users = load(self.users_file)
+            except (TypeError, EOFError) as ignored:
+                raise FileIsEmpty()
+        except FileIsEmpty:
+            self.users = []
 
     def get_one_user(self):
         if len(self.users) == 0:
             raise NotEnoughUsers()
         return self.users.pop()
 
+    def add_one_user(self, username, password):
+        self.users.append(User(username, password))
 
-class CreatUsers:
-    def __init__(self):
-        self.users = []
-        config = config_loader()
-        self.file_address = config['files']['users']
-        if os.path.exists(self.file_address):
-            self.mode = 'r+'
+    def save_data_added(self):
+        if len(self.users) != 0:
+            self.mode = 'wb'
+            self.users_file = open(self.address, self.mode)
+            dump(self.users, self.users_file)
+            self.users_file.flush()
         else:
-            self.mode = 'w'
+            raise DoesNotUserExists()
