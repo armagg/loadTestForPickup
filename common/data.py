@@ -24,22 +24,27 @@ def config_loader():
         return config
 
 
-class LoadData:
+class Data:
 
     def __init__(self):
         config = config_loader()
-        self.file_address = config['files']['users']
-        if not os.path.exists(self.file_address):
-            raise NotFoundFile
-        self.users_file = open(self.file_address, 'r')
+        address = config['files']['users']
+        self.mode = 'r' if os.path.exists(address) else 'w'
+        self.users_file = open(address, self.mode)
+        if self.mode == 'w':
+            raise FileIsEmpty()
         try:
-            self.users = json.load(self.users_file)
+            self.users: dict = json.load(self.users_file)
+            users = []
+            for user in self.users:
+                users.append(User(user['username'], user['password']))
+            self.users = users
         except json.JSONDecodeError:
             raise FileIsEmpty()
 
     def get_one_user(self):
         if len(self.users) == 0:
-            return NotEnoughUsers
+            raise NotEnoughUsers()
         return self.users.pop()
 
 

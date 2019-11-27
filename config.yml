@@ -1,3 +1,4 @@
+debug_mode: true
 dev_addresses:
   admin: https://demo-sso.digikala.com/dev/cli/
   fulfillment: https://demo-fc.digikala.com/dev/cli/

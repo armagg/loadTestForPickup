@@ -1,10 +1,10 @@
+from common.data import *
 import os
 import sys
 
 from locust import HttpLocust, task, seq_task, TaskSequence
 
 sys.path.append(os.getcwd())
-from common.data_save import *
 
 data = Data()
 config = config_loader()
@@ -65,11 +65,8 @@ class ObviousMindSet(TaskSequence):
             print('add serial')
         response = self.client.post(url=api_addresses['register_item'], headers=self.header,
                                     data={'action': 'add', 'serial': self.serial})
-        print(response.json())
-        print('ghabl: ' + str(self.next_pickup_list_id))
         response = self.client.post(url=api_addresses['confirm'], headers=self.header)
         self.next_pickup_list_id = response.json()['pickupListId']
-        print('bad: ' + str(self.next_pickup_list_id) + ' javab e server ' + str(response.json()['pickupListId']))
 
 
 class EasyPicker(HttpLocust):

@@ -20,7 +20,7 @@ def argument_adder(*args):
 
 
 def call_dev(panel: Panels, number, prefix):
-    import common.data_save as data
+    import common.data as data
     config = data.config_loader()
     address = config['dev_address'][panel.value]
     if panel == Panels.ADMIN:
