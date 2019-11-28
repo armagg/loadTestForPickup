@@ -1,9 +1,7 @@
-import json
 import os
-from dataclasses import dataclass
-
 import yaml
 from pickle import load, dump
+
 
 from common.exceptions import *
 
@@ -59,3 +57,6 @@ class Data:
             self.users_file.flush()
         else:
             raise DoesNotUserExists()
+
+    def end(self):
+        self.users_file.close()

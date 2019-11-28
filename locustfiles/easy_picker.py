@@ -1,16 +1,23 @@
-from common.data import *
 import os
 import sys
-
 from locust import HttpLocust, task, seq_task, TaskSequence
 
 sys.path.append(os.getcwd())
 
-data = Data()
+from common.data import *
+from common.commands_call import prepare_warehouse_for_pickup
+
 config = config_loader()
 api_addresses = load_yaml(config['api_file'])
 api_addresses = api_addresses['fulfillment']
 debug_mode = config['debug_mode']
+prepare_warehouse_for_pickup()
+
+data = Data()
+
+
+def create_new_orders():
+    pass
 
 
 class ObviousMindSet(TaskSequence):
@@ -50,11 +57,12 @@ class ObviousMindSet(TaskSequence):
     def get_serial(self):
         if debug_mode:
             print('getting serial')
+        # todo: handling multi serial
         response = self.client.post(url=api_addresses['get_serial'], headers=self.header,
                                     data={'pickupListId': self.next_pickup_list_id})
-        print(response.json())
         if response.status_code != 200:
-            response.failure()
+            if response.status_code == 422:
+                create_new_orders()
         else:
             self.serial = response.json()['serial']
 
@@ -63,8 +71,9 @@ class ObviousMindSet(TaskSequence):
     def add_serial(self):
         if debug_mode:
             print('add serial')
-        response = self.client.post(url=api_addresses['register_item'], headers=self.header,
-                                    data={'action': 'add', 'serial': self.serial})
+        for i in self.serial:
+            self.client.post(url=api_addresses['register_item'], headers=self.header,
+                             data={'action': 'add', 'serial': i})
         response = self.client.post(url=api_addresses['confirm'], headers=self.header)
         self.next_pickup_list_id = response.json()['pickupListId']
 

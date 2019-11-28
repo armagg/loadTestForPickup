@@ -12,3 +12,6 @@ class NotFoundFile(FileNotFoundError):
 
 class NotEnoughUsers(Exception):
     pass
+
+class DoesNotUserExists(Exception):
+    pass

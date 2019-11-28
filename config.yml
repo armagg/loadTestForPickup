@@ -5,6 +5,8 @@ dev_addresses:
 admin_command:
   create_user: supernova:digikala:account:admin:create
   number_of_users: supernova:digikala:account:number:picker:test
+fulfillment_command:
+  create_privileges: supernova:digikala:fulfillment:create:pickup:test:user:command
 arguments:
   create_user: email, pass, phone
   number_of_users: prefix, number
