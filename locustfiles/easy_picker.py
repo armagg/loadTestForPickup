@@ -1,5 +1,7 @@
 import os
 import sys
+from typing import Dict
+
 from locust import HttpLocust, task, seq_task, TaskSequence
 
 sys.path.append(os.getcwd())
@@ -21,24 +23,28 @@ def create_new_orders():
 
 
 class ObviousMindSet(TaskSequence):
+    serial: list
+    next_pickup_list_id: object
+    header: Dict[str, str]
+    does_it_end: bool
     token: str
 
     def on_start(self):
         if debug_mode:
             print('on start...')
         user_credentials = data.get_one_user()
+        self.does_it_end = False
         self.login(user_credentials)
         self.first_pick()
 
     def login(self, user_credentials):
+
         if debug_mode:
             print('login...')
         response = self.client.post(url=api_addresses['login'], data={'email': user_credentials.username,
                                                                       'password': user_credentials.password})
         json_response = response.json()
 
-        if response.status_code != 200:
-            response.failure()
         self.token = json_response['token']
 
     def first_pick(self):
@@ -47,6 +53,7 @@ class ObviousMindSet(TaskSequence):
         self.header = {'X-Auth-Key': self.token}
         response = self.client.post(url=api_addresses['get_first_step'], headers=self.header)
         response_json = response.json()
+        print(response.json())
         if response.status_code != 200:
             response.failure()
         else:
@@ -55,9 +62,10 @@ class ObviousMindSet(TaskSequence):
     @seq_task(1)
     @task(1)
     def get_serial(self):
+        if self.does_it_end:
+            pass
         if debug_mode:
             print('getting serial')
-        # todo: handling multi serial
         response = self.client.post(url=api_addresses['get_serial'], headers=self.header,
                                     data={'pickupListId': self.next_pickup_list_id})
         if response.status_code != 200:
@@ -69,13 +77,21 @@ class ObviousMindSet(TaskSequence):
     @seq_task(2)
     @task(1)
     def add_serial(self):
+        if self.does_it_end:
+            pass
         if debug_mode:
             print('add serial')
         for i in self.serial:
-            self.client.post(url=api_addresses['register_item'], headers=self.header,
-                             data={'action': 'add', 'serial': i})
+            response = self.client.post(url=api_addresses['register_item'], headers=self.header,
+                                        data={'action': 'add', 'serial': i})
+            if 'remainingCount' in response.json() and response.json()['remainingCount'] == 0:
+                break
+
         response = self.client.post(url=api_addresses['confirm'], headers=self.header)
-        self.next_pickup_list_id = response.json()['pickupListId']
+        try:
+            self.next_pickup_list_id = response.json()['pickupListId']
+        except KeyError:
+            self.does_it_end = True
 
 
 class EasyPicker(HttpLocust):
