@@ -1,0 +1,11 @@
+FROM stackbrew/debian:jessie:latest
+RUN apt-get update
+RUN apt-get-upgrade -y
+RUN apt-get install -qy python3
+RUN apt-get install -qy python3-pip
+ADD . /myLocust
+WORKDIR /myLocust
+
+RUN locust --host https://demo-fc.digikala.com -f locustfiles/easy_picker.py
+EXPOSE 8081
+CMD myLoacust --port 8081
