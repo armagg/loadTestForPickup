@@ -1,0 +1,3 @@
+
+
+RUN  locust -f locustfiles/easy_picker.py --slave --master-host=192.168.0.14

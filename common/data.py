@@ -3,7 +3,7 @@ import yaml
 from pickle import load, dump
 
 
-from common.exceptions import *
+from common.exceptions import DoesNotUserExists, NotEnoughUsers, FileIsEmpty
 
 
 class User:

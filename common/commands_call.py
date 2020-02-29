@@ -94,7 +94,7 @@ def prepare_warehouse_for_pickup():
     prefix = input('whats the prefix of them emails ? ')
     create_user(0, number_of_testers, prefix)
     print('waiting for syncing with admin')
-    time.sleep(20)
+    time.sleep(5)
     if create_privileges_for_prefix(prefix):
         print('privileges created')
         time.sleep(5)
