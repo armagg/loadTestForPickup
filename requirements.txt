@@ -14,7 +14,7 @@ locustio==0.12.2
 MarkupSafe==1.1.1
 msgpack-python==0.5.6
 python-dotenv==0.10.3
-PyYAML==5.1.2
+PyYAML==5.4
 pyzmq==18.1.0
 requests==2.22.0
 six==1.12.0
